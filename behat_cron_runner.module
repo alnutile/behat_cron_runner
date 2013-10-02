@@ -1,0 +1,125 @@
+<?php
+
+use Drupal\BehatEditor;
+use Drupal\BehatEditorSauceLabs;
+
+
+define('BEHAT_CRON_RUNNER_OFFSET_SECONDS', '3600');
+
+/**
+ * @file
+ * Setup @critical feature files to run per cron
+ */
+
+/**
+ * Implements hook_permission().
+ *
+ * Who can see the tests
+ */
+
+function behat_cron_runner_permission() {
+    $items['behat cron runner see tests'] = array(
+        'title' => t('Can see tests marked @critical'),
+        'description' => t('Can see tests marked @critical')
+    );
+    return $items;
+}
+
+/**
+ * Implements hook_menu().
+ *
+ * Show some stats for the jobs
+ *
+ */
+
+function behat_cron_runner_menu() {
+    $path = drupal_get_path('module', 'behat_cron_runner');
+    $items['admin/behat/index/critical'] = array(
+        'page callback' => 'behat_cron_runner_index',
+        'access arguments' => array('behat cron runner see tests'),
+        'file' => 'behat_cron_runner_index.inc',
+        'file path' => "$path/includes/"
+    );
+
+    $items['admin/behat_cron_runner/wormly'] = array(
+        'page callback' => 'behat_cron_runner_wormly',
+        'access callback' => TRUE,
+        'file' => 'behat_cron_runner_wormly.inc',
+        'file path' => "$path/includes/"
+    );
+
+    return $items;
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Check if it is time to run again
+ * using behat_cron_runner_offset_seconds()
+ *
+ * If TRUE trigger the job(s) with behat_cron_runner_foreach_critical_tests()
+ */
+
+
+/**
+ * Checks to see if job needs to be run again
+ *
+ * return TRUE if variable behat_cron_runner_last_cron is more than
+ * behat_cron_runner_offset_seconds value.
+ */
+
+
+/**
+ * Worker to kickoff the tests
+ *
+ * loops through all the @critical tests
+ * and runs the tests
+ *
+ * @param $item
+ *   Any object to be worked on
+ *
+ * @todo consider running one tests per Drupal
+ * DrupalQueue::get('test_file_name');
+ */
+
+function behat_cron_runner_foreach_critical_tests() {}
+
+/**
+ * Find all tests marked @critical
+ *
+ * this will store them in cache
+ * if they are not there.
+ *
+ */
+
+
+/**
+ * Run a tests looking for exit status
+ *
+ * @param $attempt
+ *   since this will be recursive I will count which run it is
+ * @param $test
+ *   the test object to run
+ */
+
+
+/**
+ * Implements hook_module_enable().
+ *
+ * Recreate the critical_tests cache
+ *
+ */
+
+
+/**
+ * Implements hook_module_disable().
+ *
+ * Recreate the critical_tests cache
+ *
+ */
+
+
+/**
+ * Extends the File class to add a
+ * rebuild on Save file
+ */

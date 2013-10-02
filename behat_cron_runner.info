@@ -1,0 +1,7 @@
+name = Behat Cron Runner
+description = Runs during cron to test @crtical tests
+package = Behat Editor
+core = 7.x
+dependencies[] = behat_editor
+dependencies[] = behat_editor_saucelabs
+dependencies[] = composer_manager
