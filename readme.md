@@ -1,5 +1,9 @@
 # Behat Cron Runner
 
+The report page is here
+admin/behat/index/critical
+
+
 Using Behat Editor module and Behat SauceLabs module.
 
 This module will add a cron job that will run all 
