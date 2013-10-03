@@ -12,12 +12,15 @@ function behat_cron_runner_index() {
     composer_manager_register_autoloader();
     $res = new Drupal\BehatRunner\Tests();
     $criticalTests = $res->getCriticalTests();
-    $results = $res->runTests(1);
-    $wormlyReport = new Drupal\BehatRunner\WormlyReport();
-    $html = $wormlyReport->createWormlyPage($results);
-    $wormlyReport->create_html_file($html);
 
     $behat_table = _behat_runner_table($criticalTests);
+
+    $path = file_build_uri("/");
+
+    $build['link'] = array(
+        '#markup' => l('Wormly Page', file_create_url($path . '/wormly.html'), array('attributes' => array('class' => 'btn btn-info'))),
+    );
+
     $build['intro'] = array(
         '#markup' => $behat_table,
     );
