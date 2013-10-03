@@ -11,6 +11,13 @@ class Runner {
         $this->allCriticalTests = self::getCriticalTests();
     }
 
+    /**
+     * Find all tests marked @critical
+     *
+     * this will store them in cache
+     * if they are not there.
+     *
+     */
     public function getCriticalTests() {
         if($cache = cache_get('behat_runner_tests')) {
             return $cache->data;

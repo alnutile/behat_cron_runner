@@ -1,8 +1,8 @@
 <?php
 
-use Drupal\BehatEditor;
-use Drupal\BehatEditorSauceLabs;
-
+use Drupal\BehatEditor,
+    Drupal\BehatEditorSauceLabs,
+    Drupal\BehatRunner;
 
 define('BEHAT_CRON_RUNNER_OFFSET_SECONDS', '3600');
 
@@ -41,15 +41,104 @@ function behat_cron_runner_menu() {
         'file path' => "$path/includes/"
     );
 
-    $items['admin/behat_cron_runner/wormly'] = array(
-        'page callback' => 'behat_cron_runner_wormly',
-        'access callback' => TRUE,
-        'file' => 'behat_cron_runner_wormly.inc',
-        'file path' => "$path/includes/"
-    );
+    /**
+     * no menu for wormly.html since it is in the files folder
+     */
 
     return $items;
 }
+
+/**
+ * Worker to kickoff the tests
+ *
+ * loops through all the @critical tests
+ * and sends that test to the test runner each
+ *
+ * @param $item
+ *   Any object to be worked on
+ *
+ * @todo consider running one tests per Drupal
+ *   DrupalQueue::get('test_file_name');
+ */
+function _behat_cron_runner_test($criticals) {
+    composer_manager_register_autoloader();
+    $wormlyReport = new Drupal\BehatRunner\WormlyReport();
+    $results = array();
+    foreach($criticals as $key) {
+        $run = 1;
+        $test = _behat_cron_runner_test_each($key, 1);
+        $status = $test['results'];
+        if($status === 1 && $run == 1) {
+            $run = 2;
+            $test = _behat_cron_runner_test_each($key, $run);
+            $duration = array_pop($test['output']);
+            $status = $test['results'];
+            $results[] = array('file_object' => $key, 'status' => $status, 'duration' => $duration, 'time' => time());
+        } else {
+            $duration = array_pop($test['output']);
+            $results[] = array('file_object' => $key, 'status' => $status, 'duration' => $duration, 'time' => time());
+        }
+        $wormlyReport->row($results);
+    }
+    $wormlyReport->createWormlyPage();
+}
+
+/**
+ * Runs the actual test
+ *
+ * Runs again if Fail
+ */
+function _behat_cron_runner_test_each($key, $run) {
+    $res = new Drupal\BehatRunner\BehatCronRunnerExec($key);
+    $test = $res->exec(1);
+    return $test;
+}
+
+/**
+ * Output for the Admin area
+ *
+ * @param $files_array
+ * @return string
+ */
+function _behat_cron_runner_table($files_array) {
+    $rows = array();
+    foreach($files_array as $key => $value) {
+        $file_name = $value['filename'];
+        $module_name = $value['module'];
+        $tags = implode(', ', $value['tags_array']);
+        $rows[] = array(
+            'data' =>
+            array
+            (
+                _show_file_link($file_name, $module_name),
+                $module_name,
+                $tags,
+                _show_link($file_name, $module_name, $link_text = 'view'),
+                _show_link($file_name, $module_name, $link_text = 'edit'),
+                _show_link($file_name, $module_name, $link_text = 'delete'),
+            )
+        );
+    };
+
+    $header = array(
+        'Name',
+        'Module',
+        'Tags',
+        'View',
+        'Edit',
+        'Delete',
+    );
+
+    $behat_table = theme('table', array(
+        'header' => $header,
+        'rows' => $rows,
+        'attributes' => array('class' => array('table-hover'), 'id' => 'admin-features')
+    ));
+
+    return $behat_table;
+}
+
+
 
 /**
  * Implements hook_cron().
@@ -60,47 +149,6 @@ function behat_cron_runner_menu() {
  * If TRUE trigger the job(s) with behat_cron_runner_foreach_critical_tests()
  */
 
-
-/**
- * Checks to see if job needs to be run again
- *
- * return TRUE if variable behat_cron_runner_last_cron is more than
- * behat_cron_runner_offset_seconds value.
- */
-
-
-/**
- * Worker to kickoff the tests
- *
- * loops through all the @critical tests
- * and runs the tests
- *
- * @param $item
- *   Any object to be worked on
- *
- * @todo consider running one tests per Drupal
- * DrupalQueue::get('test_file_name');
- */
-
-function behat_cron_runner_foreach_critical_tests() {}
-
-/**
- * Find all tests marked @critical
- *
- * this will store them in cache
- * if they are not there.
- *
- */
-
-
-/**
- * Run a tests looking for exit status
- *
- * @param $attempt
- *   since this will be recursive I will count which run it is
- * @param $test
- *   the test object to run
- */
 
 
 /**
