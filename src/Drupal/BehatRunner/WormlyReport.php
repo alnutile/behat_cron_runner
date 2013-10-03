@@ -25,21 +25,6 @@ class WormlyReport {
 
     /**
      * Private
-     * Make table from Row(s)
-     *
-     * @params = array(
-     *   file_object
-     *   status
-     *   duration
-     *   time
-     * )
-     */
-    public function row($result) {
-        $this->rows = $result;
-    }
-
-    /**
-     * Private
      * Output table to files/wormly.html
      *
      * 1. The name of the file
@@ -50,7 +35,7 @@ class WormlyReport {
      *
      * into a format I can feed the theme_table function
      */
-    public function createWormlyPage() {
+    public function createWormlyPage($results) {
         $headers = array(
             'File Name',
             'Feature',
@@ -59,24 +44,41 @@ class WormlyReport {
             'Status'
         );
 
-        foreach($this->rows as $value) {
+        foreach($results as $value) {
             $class = ($value['status'] == 1) ? 'fail' : 'pass';
-            watchdog('test_value', print_r($value, 1));
+            $status = strtoupper($class);
             $rows[] = array(
                 'data' => array(
                         $value['file_object']['filename'],
                         'coming soon...',
                         $value['duration'],
                         $value['time'],
-                        $value['status']
-                )
+                        $status
+                ),
+                'class' => array($class)
             );
         }
 
-        $table = theme('table', array('header' => $headers, 'rows' => $rows));
-        watchdog('test_table', print_r($rows, 1));
-        watchdog('test_table', print_r($table, 1));
+        $timezone = 'America/New_York';
+        $last_run = variable_get('behat_cron_runner_last_run', '');
+        if(empty($last_run)) {
+            $last_run = t('NEVER!');
+        } else {
+            $last_run = format_date($last_run, 'long', $format = '',  $timezone);
+        }
+        $header = "<h1>Last Run: {$last_run} in $timezone";
+        $table_html = theme('table', array('header' => $headers, 'rows' => $rows));
+        return $header . '<br>' . $table_html;
+    }
 
+    /**
+     * Take html and write to the file
+     * @param $table_html
+     */
+    public function create_html_file($html) {
+        $path = file_build_uri("/");
+        $response = file_unmanaged_save_data($html, $path . '/wormly.html', $replace = FILE_EXISTS_REPLACE);
+        return $response;
     }
 
     /**
