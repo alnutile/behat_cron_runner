@@ -8,24 +8,8 @@ class WormlyReport {
     private $table_array = array();
 
     /**
-     * Construct the row
-     *
-     */
-
-    /**
      * Public
-     * Make array of results array from row(s) coming in
-     * @row = array()
-     *   @file_object coming
-     *   @status PASS / FAIL
-     *   @length of test
-     *   @time run
-     *
-     */
-
-    /**
-     * Private
-     * Output table to files/wormly.html
+     * Output table to html formatted content
      *
      * 1. The name of the file
      * 2. The name of the feature
@@ -60,7 +44,7 @@ class WormlyReport {
         }
 
         $timezone = 'America/New_York';
-        $last_run = variable_get('behat_cron_runner_last_run', '');
+        $last_run = variable_get('behat_cron_runner_last_run', 0);
         if(empty($last_run)) {
             $last_run = t('NEVER!');
         } else {

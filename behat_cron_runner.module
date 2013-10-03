@@ -48,8 +48,6 @@ function behat_cron_runner_menu() {
     return $items;
 }
 
-
-
 /**
  * Implements hook_cron().
  *
@@ -59,7 +57,24 @@ function behat_cron_runner_menu() {
  * If TRUE trigger the job(s) with behat_cron_runner_foreach_critical_tests()
  */
 
+function behat_cron_runner_cron() {
+    $last_run = variable_get('behat_cron_runner_last_run', 0);
+    $diff = REQUEST_TIME - $last_run;
+    if($diff > BEHAT_CRON_RUNNER_OFFSET_SECONDS ) {
+        _behat_cron_runner_run();
+        watchdog('behat_cron_runner', t("Cron job ran at @time", array('@time' => format_date(REQUEST_TIME, 'long', '', $timezone = 'America/New_York'))));
+    }
+}
 
+function _behat_cron_runner_run() {
+    composer_manager_register_autoloader();
+    $res = new Drupal\BehatRunner\Tests();
+    $res->getCriticalTests();
+    $results = $res->runTests(0); //No Javascript just yet
+    $wormlyReport = new Drupal\BehatRunner\WormlyReport();
+    $html = $wormlyReport->createWormlyPage($results);
+    $wormlyReport->create_html_file($html);
+}
 
 /**
  * Implements hook_module_enable().
