@@ -66,6 +66,9 @@ function behat_cron_runner_cron() {
     }
 }
 
+/**
+ * Group functions to make the final call
+ */
 function _behat_cron_runner_run() {
     composer_manager_register_autoloader();
     $res = new Drupal\BehatRunner\Tests();

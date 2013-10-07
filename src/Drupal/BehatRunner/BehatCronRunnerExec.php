@@ -4,13 +4,22 @@ namespace Drupal\BehatRunner;
 use Drupal\BehatEditor\BehatEditorRun;
 
 class BehatCronRunnerExec extends BehatEditorRun {
+    public $saucelabs = FALSE;
 
     public function __construct($file_object) {
         parent::__construct($file_object);
+        /**
+         * Quick check to see if we should force this to SauceLabs
+         */
+        if(module_exists('behat_editor_saucelabs')) {
+            $path = drupal_get_path('module', 'behat_editor_saucelabs');
+            $this->yml_path = drupal_realpath($path) . '/behat/behat.yml';
+            $this->saucelabs = TRUE;
+        }
     }
 
     public function exec($javascript = FALSE) {
-        if($javascript == TRUE) {
+        if($javascript == TRUE || $this->saucelabs == TRUE) {
             $tags = '';
         } else {
             $tags = "--tags '~@javascript'";
