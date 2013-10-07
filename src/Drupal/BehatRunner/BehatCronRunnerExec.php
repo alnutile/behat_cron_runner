@@ -16,9 +16,6 @@ class BehatCronRunnerExec extends BehatEditorRun {
             $this->yml_path = drupal_realpath($path) . '/behat/behat.yml';
             $this->saucelabs = TRUE;
         }
-        watchdog('test_sl_exists', print_r(module_exists('behat_editor_saucelabs'), 1));
-        watchdog('test_sl_path', print_r($this->yml_path, 1));
-
     }
 
     public function exec($javascript = FALSE) {
