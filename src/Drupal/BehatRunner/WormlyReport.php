@@ -62,6 +62,7 @@ class WormlyReport {
     public function create_html_file($html) {
         $path = file_build_uri("/");
         $response = file_unmanaged_save_data($html, $path . '/wormly.html', $replace = FILE_EXISTS_REPLACE);
+        drupal_chmod($path . '/wormly.html', $mode = 0666);
         return $response;
     }
 

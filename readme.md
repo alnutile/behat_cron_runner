@@ -1,5 +1,8 @@
 # Behat Cron Runner
 
+### Bug
+install composer manager not picking up my composer file and adding it to the autoload_namespace file
+
 The report page is here
 admin/behat/index/critical
 

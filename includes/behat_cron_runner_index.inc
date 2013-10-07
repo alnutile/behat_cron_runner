@@ -15,6 +15,12 @@ function behat_cron_runner_index() {
 
     $behat_table = _behat_runner_table($criticalTests);
 
+    $last_run = variable_get('behat_cron_runner_last_run', 0);
+    $diff = REQUEST_TIME - $last_run;
+    dpm($last_run);
+
+    dpm($diff);
+
     $path = file_build_uri("/");
 
     $build['link'] = array(
@@ -46,7 +52,7 @@ function _behat_runner_table($files_array) {
             array
             (
                 _show_file_link($file_name, $module_name),
-                $module_name,
+                _show_module_name($module_name),
                 $tags,
                 _show_link($file_name, $module_name, $link_text = 'view'),
                 _show_link($file_name, $module_name, $link_text = 'edit'),
