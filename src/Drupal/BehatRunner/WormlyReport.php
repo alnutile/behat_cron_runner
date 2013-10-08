@@ -5,6 +5,7 @@ namespace Drupal\BehatRunner;
 
 class WormlyReport {
     public $rows = array();
+    public $feature_name = 'Not Found..';
     private $table_array = array();
 
     /**
@@ -25,25 +26,26 @@ class WormlyReport {
             'Feature',
             'Duration',
             'Time Ran',
-            'Status'
+            'Status',
         );
 
         foreach($results as $value) {
+            $timezone = 'America/New_York';
             $class = ($value['status'] == 1) ? 'fail' : 'pass';
             $status = strtoupper($class);
+            $this->feature_name = self::grab_feature($value['file_object']['scenario']);
             $rows[] = array(
                 'data' => array(
                         $value['file_object']['filename'],
-                        'coming soon...',
+                        $this->feature_name,
                         $value['duration'],
-                        $value['time'],
+                        format_date($value['time'], 'long', $format = '',  $timezone),
                         $status
                 ),
                 'class' => array($class)
             );
         }
 
-        $timezone = 'America/New_York';
         $last_run = variable_get('behat_cron_runner_last_run', 0);
         if(empty($last_run)) {
             $last_run = t('NEVER!');
@@ -70,4 +72,23 @@ class WormlyReport {
      * Private
      * Check for wormly.html and make it not there
      */
+    public function grab_feature($file_text) {
+        $feature_to_array = explode("\n", $file_text);
+        $results = self::find_feature_line($feature_to_array, 0);
+        return $results;
+    }
+
+    /**
+     * Find Feature
+     */
+    public function find_feature_line($array, $step) {
+        $total = count($array);
+        for($i = $step; $i <= $total; $i++) {
+            if(strpos($array[$i], 'Feature:') !== false) {
+                return $array[$i];
+                break;
+            }
+        }
+    }
+
 }

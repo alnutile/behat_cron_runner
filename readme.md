@@ -4,6 +4,7 @@
 This module will add a cron job that will run all
 Features and Scenarios marked @critical
 
+*If using SauceLabs only tests with @javascript will run. See ticket
 
 ### Install
 
