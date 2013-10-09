@@ -1,7 +1,26 @@
 {
+    "name": "drupal/behat_cron_runner",
+    "type": "drupal-module",
+    "description": "Runs @critical behat tests at cron time.",
+    "homepage": "https://github.com/alnutile/behat_cron_runner",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Alfred Nutile",
+            "email": "alfrednutile@gmail.com",
+            "role": "The guy behind the keyboard"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/alnutile/behat_cron_runner/issues"
+    },
+    "require": {
+        "behat/behat": "2.4.*@stable"
+    },
     "autoload": {
         "psr-0": {
             "Drupal\\BehatRunner": "src/"
         }
     }
 }
+
