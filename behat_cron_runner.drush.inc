@@ -13,7 +13,7 @@ function behat_cron_runner_drush_command() {
     $items = array();
 
     $items['behat-cron-run'] = array(
-        'description' => 'Run the cron job for critical jobs pass 1 for javascript TRUE',
+        'description' => 'Run the cron job for critical jobs pass 1 for javascript TRUE and 1 for update wormly.html',
         'allow-additional-options' => TRUE,
         'aliases' => array('bcr'),
         'examples' => array(
