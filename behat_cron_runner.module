@@ -77,7 +77,30 @@ function _behat_cron_runner_run() {
     $wormlyReport = new Drupal\BehatRunner\WormlyReport();
     $html = $wormlyReport->createWormlyPage($results);
     $wormlyReport->create_html_file($html);
+    variable_set('behat_cron_runner_last_run', REQUEST_TIME);
 }
+
+
+/**
+ * Hooking the exec function from BehatEditorRun and altering the path that is being used.
+ * @todo what function should do this? Site wide alter or this spefic cron runner?
+ *
+ * @param $command
+ * @param $context1
+ */
+function behat_cron_runner_behat_editor_command_alter(&$command, $context1){
+    if($context1 == 'behat_run') {
+        watchdog("behat_cron_runner", t('Running tests for @context', array('@context' => $context1)));
+        //@todo it is really not this modules job to choose this
+        if(module_exists('behat_editor_saucelabs')) {
+            $path = drupal_get_path('module', 'behat_editor_saucelabs');
+            $yml_path = drupal_realpath($path) . '/behat/behat.yml';
+            $command['tags'] = '';                                              //allow js to run
+            $command['config'] = "--config=\"$yml_path\"";                      //set path to go to saucelabs
+        }
+    }
+}
+
 
 /**
  * Implements hook_module_enable().

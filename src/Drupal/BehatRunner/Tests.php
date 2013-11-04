@@ -3,12 +3,14 @@
 namespace Drupal\BehatRunner;
 
 use Drupal\BehatEditor\Files,
-    Drupal\BehatRunner;
+    Drupal\BehatRunner,
+    Drupal\BehatEditor;
 
 class Tests {
     public $allCriticalTests = array();
 
     public function __construct() {
+        composer_manager_register_autoloader();
         $this->allCriticalTests = self::getCriticalTests();
     }
 
@@ -20,20 +22,30 @@ class Tests {
      *
      */
     public function getCriticalTests() {
-        if($cache = cache_get('behat_runner_tests')) {
+
+        $cache = cache_get('behat_runner_tests');
+        if(cache_get('behat_runner_tests')) {
             return $cache->data;
         } else {
             return self::_setCriticalTestsCache();
         }
     }
 
+    /**
+     * Run the tests but if fail (status = 1)
+     * run a second time.
+     *
+     * @param int $javascript
+     * @return array
+     */
     public function runTests($javascript = 0) {
         $results = array();
         foreach($this->allCriticalTests as $key) {
             $run = 1;
             $test = self::_test_each($key, 1, $javascript);
             $status = $test['results'];
-            if($status === 1 && $run == 1) {
+            $fail = 1;
+            if($status === $fail && $run == 1) {
                 $run = 2;
                 $test = self::_test_each($key, $run, $javascript);
                 $duration = array_pop($test['output']);
@@ -48,15 +60,14 @@ class Tests {
     }
 
     private function _test_each($key, $run, $javascript) {
-        $res = new BehatCronRunnerExec($key);
+        //$res = new BehatCronRunnerExec($key);
+        $res = new BehatEditor\BehatEditorRun($key);
         $test = $res->exec($javascript);
         return $test;
     }
 
 
     private function _setCriticalTestsCache(){
-        composer_manager_register_autoloader();
-
         $get = new Files();
         $data = $get->getFilesArray();
         $dataTmp = self::_filterCritical($data);
@@ -67,8 +78,11 @@ class Tests {
         $criticals = array();
         foreach($files_array as $key => $value) {
             foreach($value as $file_path => $values) {
-                if(in_array('@critical', $values['tags_array'])) {
-                    $criticals[$file_path] = $values;
+                foreach($values['tags_array'] as $tag) {
+                    //in_array not working do to spaces
+                    if(trim($tag) == '@critical') {
+                        $criticals[$file_path] = $values;
+                    }
                 }
             }
         }
