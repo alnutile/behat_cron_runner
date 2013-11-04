@@ -12,8 +12,6 @@ class Tests {
     public function __construct() {
         composer_manager_register_autoloader();
         $this->allCriticalTests = self::getCriticalTests();
-
-        watchdog('test_line_16', print_r($this->allCriticalTests, 1));
     }
 
     /**
@@ -29,7 +27,6 @@ class Tests {
         if(cache_get('behat_runner_tests')) {
             return $cache->data;
         } else {
-            watchdog('test_line_32', print_r(self::_setCriticalTestsCache(), 1));
             return self::_setCriticalTestsCache();
         }
     }
@@ -80,14 +77,10 @@ class Tests {
     private function _filterCritical($files_array) {
         $criticals = array();
         foreach($files_array as $key => $value) {
-            watchdog('test_line_83', print_r($key, 1));
             foreach($value as $file_path => $values) {
-                watchdog('test_line_84', print_r($values['tags_array'], 1));
                 foreach($values['tags_array'] as $tag) {
-                    //in_array not working for some reason?
-                    watchdog("tag", print_r(substr($tag, 1), 1));
-                    if(substr($tag, 1) == 'critical') {
-                        watchdog("found_in_array", print_r('test'));
+                    //in_array not working do to spaces
+                    if(trim($tag) == '@critical') {
                         $criticals[$file_path] = $values;
                     }
                 }
