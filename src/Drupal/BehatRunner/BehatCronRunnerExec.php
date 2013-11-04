@@ -3,6 +3,14 @@
 namespace Drupal\BehatRunner;
 use Drupal\BehatEditor\BehatEditorRun;
 
+
+/**
+ * @todo remove this class since now the BehatEditorRun comes with a drupal_alter.
+ *   just need to see if it is enough
+ *
+ * Class BehatCronRunnerExec
+ * @package Drupal\BehatRunner
+ */
 class BehatCronRunnerExec extends BehatEditorRun {
     public $saucelabs = FALSE;
 
