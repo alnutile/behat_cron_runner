@@ -43,16 +43,16 @@ class Tests {
         foreach($this->allCriticalTests as $key) {
             $run = 1;
             $test = self::_test_each($key, 1, $javascript);
-            $status = $test['results'];
+            $status = $test['response'];
             $fail = 1;
             if($status === $fail && $run == 1) {
                 $run = 2;
                 $test = self::_test_each($key, $run, $javascript);
-                $duration = array_pop($test['output']);
-                $status = $test['results'];
+                $duration = array_pop($test['output_array']);
+                $status = $test['response'];
                 $results[] = array('file_object' => $key, 'status' => $status, 'duration' => $duration, 'time' => time());
             } else {
-                $duration = array_pop($test['output']);
+                $duration = array_pop($test['output_array']);
                 $results[] = array('file_object' => $key, 'status' => $status, 'duration' => $duration, 'time' => time());
             }
         }
