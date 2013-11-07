@@ -48,11 +48,11 @@ class Tests {
             if($status === $fail && $run == 1) {
                 $run = 2;
                 $test = self::_test_each($key, $run, $javascript);
-                $duration = array_pop($test['output']);
+                $duration = array_pop($test['output_array']);
                 $status = $test['results'];
                 $results[] = array('file_object' => $key, 'status' => $status, 'duration' => $duration, 'time' => time());
             } else {
-                $duration = array_pop($test['output']);
+                $duration = array_pop($test['output_array']);
                 $results[] = array('file_object' => $key, 'status' => $status, 'duration' => $duration, 'time' => time());
             }
         }
