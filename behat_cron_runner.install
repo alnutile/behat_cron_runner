@@ -5,6 +5,10 @@
  * Install, update and uninstall functions for the behat_cron_runner module.
  */
 
+function behat_cron_runner_install() {
+
+}
+
 /**
  * Implements hook_uninstall().
  */

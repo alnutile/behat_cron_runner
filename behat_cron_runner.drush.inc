@@ -32,28 +32,30 @@ function behat_cron_runner_drush_command() {
 
 function drush_behat_cron_runner_behat_cron_run() {
     print "Running Tests...\n\r";
-    if(func_num_args() > 0) {
-        $javascript = func_get_arg(0);
-    } else {
-        $javascript = 0;
-    }
 
-    //@todo validate args
-    composer_manager_register_autoloader();
-    //@todo get composer to load this
+    variable_set('behat_cron_runner_last_run', time());
 
-    $res = new Drupal\BehatRunner\Tests();
-    $criticalTests = $res->getCriticalTests();
-    $results = $res->runTests($javascript);
+    //1. get files
+    $root_test_path = variable_get('file_private_path') . '/behat_tests/';
+    $getTests = new BehatRunner\GetTests($root_test_path);
+
+    $iterator = $getTests->finder->files()
+        ->name('*.feature')
+        ->contains('@critical')
+        ->in($root_test_path);
+
+    $yml_path = variable_get('file_private_path') . '/behat.yml';
+    $bin_path = drupal_realpath(variable_get('composer_manager_vendor_dir')) . '/bin/';
+    $runner = new BehatRunner\BehatEditorRun($yml_path, null, $bin_path);
+
+    //2. Iterate over files and run
+    $results = $runner->runMany($iterator);
+
+    //3. Build report
     $wormlyReport = new Drupal\BehatRunner\WormlyReport();
     $html = $wormlyReport->createWormlyPage($results);
+    $wormlyReport->create_html_file($html);
 
-    if(func_num_args() > 1) {
-        if(func_get_arg(1) == 1) {
-            //Update the wormly HTML
-            $wormlyReport->create_html_file($html);
-        }
-    }
-
-    return drush_html_to_text("\n\r" . $html);
+    print drush_html_to_text("\n\r" . $html);
+    return;
 }
