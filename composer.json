@@ -15,8 +15,24 @@
         "issues": "https://github.com/alnutile/behat_cron_runner/issues"
     },
     "require": {
-        "behat/behat": "2.4.*@stable"
+        "behat/mink-zombie-driver": "*",
+        "alnutile/behat-wrapper": "dev-master",
+        "alnutile/business-selector-extension": "dev-master",
+        "behat/mink": "*",
+        "behat/mink-goutte-driver": "*",
+        "behat/mink-selenium-driver": "*",
+        "behat/mink-selenium2-driver": "*",
+        "behat/mink-extension": "dev-CommandTimeout",
+        "behat/mink-sahi-driver": "*",
+        "drupal/drupal-extension": "*",
+        "symfony/finder": "2.5.*@dev"
     },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/alnutile/MinkExtension.git"
+        }
+    ],
     "autoload": {
         "psr-0": {
             "Drupal\\BehatRunner": "src/"

@@ -5,6 +5,4 @@ core = 7.x
 
 configure = admin/behat/index/critical
 
-dependencies[] = behat_editor
-dependencies[] = behat_editor_saucelabs
 dependencies[] = composer_manager
