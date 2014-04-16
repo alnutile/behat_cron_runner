@@ -40,10 +40,10 @@ class WormlyReport {
         return $header . '<br>' . $table_html;
     }
 
-    public function create_html_file($html) {
+    public function create_html_file($html, $report_name = '/wormly.html') {
         $path = file_build_uri("/");
-        $response = file_unmanaged_save_data($html, $path . '/wormly.html', $replace = FILE_EXISTS_REPLACE);
-        drupal_chmod($path . '/wormly.html', $mode = 0666);
+        $response = file_unmanaged_save_data($html, $path . '/' . $report_name, $replace = FILE_EXISTS_REPLACE);
+        drupal_chmod($path . '/' . $report_name, $mode = 0666);
         return $response;
     }
 
