@@ -8,6 +8,10 @@ function file_build_uri() {
     return '/tmp/wormly';
 }
 
+function drupal_realpath() {
+    return "/tmp/wormly/wormly";
+}
+
 class WormlyReportTest extends TestBase {
     public $results;
     public $pages;
@@ -41,12 +45,31 @@ class WormlyReportTest extends TestBase {
         $this->assertContains('FAIL', $output['test1.feature']['result']);
     }
 
-    function testCreateHTMLFile()
+    function testWriteHTMLFile()
     {
         $html = "Test Report";
         $wormly = new WormlyReport();
-        $wormly->create_html_file($html, 'test.html');
+        $wormly->write_html_file($html, 'test.html');
         $this->assertFileExists('/tmp/wormly/wormly/test.html');
+    }
+
+    /**
+     * @expectedException BehatWrapper\BehatException
+     */
+    function testCanNOTWriteHTMLFile()
+    {
+        $html = "Test Report";
+        $wormly = new WormlyReport();
+        $this->fileSystem->chmod('/tmp/wormly/wormly/', 0444);
+        $wormly->write_html_file($html, 'test.html');
+    }
+
+    function testCreateOneWormlyPage()
+    {
+        $wormly = new WormlyReport();
+        $output = $wormly->createOneWormlyPage($this->results['test1.feature']);
+        $this->assertContains('America/New_York', $output);
+        $this->assertContains('FAIL', $output);
     }
 
     function testCreateManyFiles()

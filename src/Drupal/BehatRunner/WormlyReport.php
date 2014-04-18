@@ -1,7 +1,9 @@
 <?php
 
 namespace Drupal\BehatRunner;
+
 use Symfony\Component\Filesystem\Filesystem;
+use BehatWrapper\BehatException;
 
 class WormlyReport {
     public $rows = array();
@@ -20,34 +22,44 @@ class WormlyReport {
         };
     }
 
-
     public function createWormlyPages($results) {
         $pages = array();
         foreach($results as $value) {
-            $timezone = 'America/New_York';
-            $class = ($value['status'] == 1) ? 'fail' : 'pass';
-            $status = strtoupper($class);
-            $date = date('M-d-Y h:i:s', $value['time']);
-            $header = "<h1>Last Run: {$date} in $timezone</h1>";
-
-            $pages[$value['filename']]['result'] = "$header <p>{$value['filename']} &nbsp; $status</p>";
+            $result = $this->createOneWormlyPage($value);
+            $pages[$value['filename']]['result'] = $result;
             $pages[$value['filename']]['filename'] = $value['filename'];
         }
-
         return $pages;
     }
 
-    public function create_html_file($html, $report_name = 'wormly.html') {
+    public function createOneWormlyPage($result)
+    {
+        $timezone = 'America/New_York';
+        $class = ($result['status'] == 1) ? 'fail' : 'pass';
+        $status = strtoupper($class);
+        $date = date('M-d-Y h:i:s');
+        $header = "<h1>Last Run: {$date} in {$timezone}</h1>";
+        return "$header <p>{$result['filename']} &nbsp; {$status}</p>";
+    }
+
+    public function write_html_file($html, $report_name = 'wormly.html') {
         $destination = $this->path . '/' . $report_name;
+        if($this->filesystem->exists($destination)) {
+            $this->filesystem->chmod($destination, 0766);
+        }
         $write = @file_put_contents($destination, $html);
-        if ($write) { $this->filesystem->chmod($destination, 0755); }
+        if ($write) {
+            $this->filesystem->chmod($destination, 0766);
+        } else {
+            throw new BehatException("Error writing file.");
+        }
     }
 
     public function createManyFiles($pages)
     {
         foreach($pages as $value) {
             $filename = $value['filename'] . '.html';
-            $this->create_html_file($value['result'], $filename);
+            $this->write_html_file($value['result'], $filename);
         }
     }
 }
