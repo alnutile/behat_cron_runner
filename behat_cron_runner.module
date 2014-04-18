@@ -48,22 +48,17 @@ function behat_cron_runner_menu() {
     return $items;
 }
 
-/**
- * Implements hook_cron().
- *
- * Check if it is time to run again
- * using behat_cron_runner_offset_seconds()
- *
- * If TRUE trigger the job(s) with behat_cron_runner_foreach_critical_tests()
- */
-
-function behat_cron_runner_cron() {
-    $last_run = variable_get('behat_cron_runner_last_run', 0);
-    $diff = REQUEST_TIME - $last_run;
-    if($diff > BEHAT_CRON_RUNNER_OFFSET_SECONDS ) {
-        _behat_cron_runner_run();
-        watchdog('behat_cron_runner', t("Cron job ran at @time", array('@time' => format_date(REQUEST_TIME, 'long', '', $timezone = 'America/New_York'))));
-    }
+function behat_cron_runner_cronapi() {
+    $items = array();
+    $items['_behat_cron_runner_run'] = array(
+        'scheduler' => array(
+            'name' => 'crontab',
+            'crontab' => array(
+                'rules' => array('*/5 * * * *'),
+            )
+        )
+    );
+    return $items;
 }
 
 /**
@@ -89,8 +84,8 @@ function _behat_cron_runner_run() {
 
     //3. Build report
     $wormlyReport = new Drupal\BehatRunner\WormlyReport();
-    $html = $wormlyReport->createWormlyPage($results);
-    $wormlyReport->create_html_file($html);
+    $html = $wormlyReport->createWormlyPages($results);
+    $wormlyReport->createManyFiles($html);
 
     variable_set('behat_cron_runner_last_run', REQUEST_TIME);
 }

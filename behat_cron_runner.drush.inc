@@ -53,9 +53,12 @@ function drush_behat_cron_runner_behat_cron_run() {
 
     //3. Build report
     $wormlyReport = new Drupal\BehatRunner\WormlyReport();
-    $html = $wormlyReport->createWormlyPage($results);
-    $wormlyReport->create_html_file($html);
+    $pages = $wormlyReport->createWormlyPages($results);
+    $wormlyReport->createManyFiles($pages);
 
-    print drush_html_to_text("\n\r" . $html);
+    foreach($pages as $value) {
+        print drush_html_to_text($value['result']);
+        print "\n";
+    }
     return;
 }
