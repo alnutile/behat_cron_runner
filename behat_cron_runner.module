@@ -4,7 +4,7 @@ use Drupal\BehatEditor,
     Drupal\BehatEditorSauceLabs,
     Drupal\BehatRunner;
 
-define('BEHAT_CRON_RUNNER_OFFSET_SECONDS', '3600');
+define('BEHAT_CRON_RUNNER_OFFSET_SECONDS', '0');
 
 /**
  * @file
@@ -41,6 +41,7 @@ function behat_cron_runner_menu() {
         'file path' => "$path/includes/"
     );
 
+
     /**
      * no menu for wormly.html since it is in the files folder
      */
@@ -48,49 +49,25 @@ function behat_cron_runner_menu() {
     return $items;
 }
 
-/**
- * Implements hook_cron().
- *
- * Check if it is time to run again
- * using behat_cron_runner_offset_seconds()
- *
- * If TRUE trigger the job(s) with behat_cron_runner_foreach_critical_tests()
- */
+function behat_cron_runner_cronapi() {
+    $items = array();
+    $items['_behat_cron_runner_run'] = array(
+        'scheduler' => array(
+            'name' => 'crontab',
+            'crontab' => array(
+                'rules' => array('*/5 * * * *'),
+            )
+        )
+    );
 
-function behat_cron_runner_cron() {
-    $last_run = variable_get('behat_cron_runner_last_run', 0);
-    $diff = REQUEST_TIME - $last_run;
-    if($diff > BEHAT_CRON_RUNNER_OFFSET_SECONDS ) {
-        _behat_cron_runner_run();
-        watchdog('behat_cron_runner', t("Cron job ran at @time", array('@time' => format_date(REQUEST_TIME, 'long', '', $timezone = 'America/New_York'))));
-    }
+    //_behat_cron_runner_queue_setup <-- this is the next name for setting up the jobs
+    return $items;
 }
 
 /**
  * Group functions to make the final call
  */
 function _behat_cron_runner_run() {
-    composer_manager_register_autoloader();
-    //1. get files
-    $root_test_path = variable_get('file_private_path') . '/behat_tests/';
-    $getTests = new BehatRunner\GetTests($root_test_path);
-
-    $iterator = $getTests->finder->files()
-        ->name('*.feature')
-        ->contains('@critical')
-        ->in($root_test_path);
-
-    $yml_path = variable_get('file_private_path') . '/behat.yml';
-    $bin_path = drupal_realpath(variable_get('composer_manager_vendor_dir')) . '/bin/';
-    $runner = new BehatRunner\BehatEditorRun($yml_path, null, $bin_path);
-
-    //2. Iterate over files and run
-    $results = $runner->runMany($iterator);
-
-    //3. Build report
-    $wormlyReport = new Drupal\BehatRunner\WormlyReport();
-    $html = $wormlyReport->createWormlyPage($results);
-    $wormlyReport->create_html_file($html);
-
-    variable_set('behat_cron_runner_last_run', REQUEST_TIME);
+    $path = drupal_realpath(__DIR__);
+    exec("cd $path && drush bcr");
 }
