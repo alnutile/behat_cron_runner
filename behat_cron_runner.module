@@ -41,6 +41,7 @@ function behat_cron_runner_menu() {
         'file path' => "$path/includes/"
     );
 
+
     /**
      * no menu for wormly.html since it is in the files folder
      */
@@ -58,6 +59,8 @@ function behat_cron_runner_cronapi() {
             )
         )
     );
+
+    //_behat_cron_runner_queue_setup <-- this is the next name for setting up the jobs
     return $items;
 }
 
