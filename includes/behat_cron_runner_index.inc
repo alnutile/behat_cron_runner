@@ -21,6 +21,9 @@ private/behat/features/bootstrap
 <br>
 See readme.md for drush notes
 </p>
+<p>
+Checkout Ultimate Cron <a href='/admin/config/system/cron'>here</a><br>
+Checkout Drupal Queue <a href='/admin/behat_cron_queue'>here</a><br>
 HEREDOC;
     $form['notice'] = array(
         '#markup' => "$message"

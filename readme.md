@@ -32,8 +32,9 @@ You should have access to mt commands
 
 ## Ultimate Cron
 
+[admin/config/system/cron]
 Ultimate cron is in place as well as a dependency so you will need to follow its instructions for setting up Cron
 
 ## Queue View
 
-This should be under
+[admin/behat_cron_queue]

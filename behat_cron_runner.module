@@ -62,8 +62,14 @@ function behat_cron_runner_cronapi() {
             )
         )
     );
-
-    //_behat_cron_runner_queue_setup <-- this is the next name for setting up the jobs
+    $items['_behat_cron_queue_setup'] = array(
+        'scheduler' => array(
+            'name' => 'crontab',
+            'crontab' => array(
+                'rules' => array('*/15 * * * *'),
+            )
+        )
+    );
     return $items;
 }
 
@@ -73,4 +79,12 @@ function behat_cron_runner_cronapi() {
 function _behat_cron_runner_run() {
     $path = drupal_realpath(__DIR__);
     exec("cd $path && drush bcr");
+}
+
+/**
+ * Group functions to make the final call
+ */
+function _behat_cron_queue_setup() {
+    $path = drupal_realpath(__DIR__);
+    exec("cd $path && drush bcq");
 }

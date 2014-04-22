@@ -23,6 +23,5 @@ features[variable][] = composer_manager_autobuild_packages
 features[variable][] = composer_manager_file_dir
 features[variable][] = composer_manager_vendor_dir
 features[variable][] = default_ultimate_cron_job__behat_cron_runner_run
-features[variable][] = file_private_path
 features[variable][] = file_public_path
 features[views_view][] = queue
