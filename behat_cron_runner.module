@@ -34,11 +34,14 @@ function behat_cron_runner_permission() {
 
 function behat_cron_runner_menu() {
     $path = drupal_get_path('module', 'behat_cron_runner');
-    $items['admin/behat/index/critical'] = array(
-        'page callback' => 'behat_cron_runner_index',
-        'access arguments' => array('behat cron runner see tests'),
+    $items['admin/config/behat/settings'] = array(
+        'title' => "Behat Cron Runer Settings",
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('behat_cron_runner_admin_form'),
+        'access arguments' => array('administer site configuration'),
         'file' => 'behat_cron_runner_index.inc',
-        'file path' => "$path/includes/"
+        'file path' => "$path/includes/",
+        'type' => MENU_NORMAL_ITEM,
     );
 
 

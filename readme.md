@@ -4,46 +4,36 @@
 This module will add a cron job that will run all
 Features and Scenarios marked @critical
 
-*If using SauceLabs only tests with @javascript will run. See ticket
+## Install
 
-### Install
+There is a feature to take care of most of it BUT there are variables to change as needed
+-Private path
 
-It uses composer_manager to set the autoload but that does not work as noted below.
+#### Configure
 
-#### BUG
+There somre notes here as well
 
-**install composer manager not picking up my composer file and adding it to the autoload_namespace
-file so right now I add it my self to the vendor/composer/autoload_namespaces.php under BehatEditor**
+[admin/config/behat/settings]
 
-Once this is installed it should just run with each cron job.
-You can run the drush commands to try it out
-drush cc drush
-drush bcr 0 1
+## Drush Multi Thread
 
-The final command will skip the javascript tags but still run and udpate wormly.
+You will need
+https://github.com/johnennewdeeson/drush-multi-processing/blob/master/mt.drush.inc
+And install those as needed so your drush can access the commands
 
-### Now what
+so when you run
 
-The final report page is here
-admin/behat/index/critical
+```
+drush cc all
+drush help
+```
 
-#### Using Behat Editor module and Behat SauceLabs module.
+You should have access to mt commands
 
-If BehatEditorSauceLabs [https://github.com/alnutile/behat_editor_saucelabs] is enabled it will use that modules Run class
-else it will just use the Behat Module run non @javascript tests
+## Ultimate Cron
 
-It will track the last_run and only run every 3600 seconds.
+Ultimate cron is in place as well as a dependency so you will need to follow its instructions for setting up Cron
 
-On a Fail it will run again immediately and on the second fail it will 
-trigger a Wormly based notice.
+## Queue View
 
-### Drush
-
-drush bcr 1 1
-this would that tests including the @javascript tags (first 1)
-and update wormly (second 1)
-
-
-You can run
-drush help bcr
-for more info
+This should be under

@@ -1,73 +1,50 @@
 <?php
 
-use Drupal\BehatRunner,
-    Drupal\BehatEditor;
 
-/**
- * Output a table of items marked critical
- *
- */
-
-function behat_cron_runner_index() {
-    composer_manager_register_autoloader();
-    $res = new Drupal\BehatRunner\Tests();
-    $criticalTests = $res->getCriticalTests();
-    $behat_table = _behat_runner_table($criticalTests);
-    $path = file_build_uri("/");
-
-    $build['link'] = array(
-        '#markup' => l('Wormly Page', file_create_url($path . '/wormly.html'), array('attributes' => array('class' => 'btn btn-info'))),
+function behat_cron_runner_admin_form($form, &$form_state) {
+    $message = <<<HEREDOC
+<p>
+Make sure to set your private drupal path since this is key to storing information.
+In there should be this folder structure
+<br>
+private/behat/feature/bootstrap
+<br>
+private/behat.yml
+<br>
+Your Tests will be in
+<br>
+private/behat/features
+<br>
+Your FeatureContext.php if you have hooks
+<br>
+private/behat/features/bootstrap
+<br>
+See readme.md for drush notes
+</p>
+HEREDOC;
+    $form['notice'] = array(
+        '#markup' => "$message"
+    );
+    $form['behat_cron_runner_profile'] = array(
+        '#title' => 'Behat.yml profile to default to',
+        '#type' => 'textfield',
+        '#default_value' => variable_get('behat_cron_runner_profile', 'default'),
+        '#description' => t('You may have one called production or dev or saucelabs'),
     );
 
-    $build['intro'] = array(
-        '#markup' => $behat_table,
+    $form['behat_cron_runner_q_limit'] = array(
+        '#title' => 'How many items to process per Queue run',
+        '#type' => 'textfield',
+        '#default_value' => variable_get('behat_cron_runner_q_limit', 10),
+        '#description' => t('Not sure what is best here. If it is not clear by the next behat run it is no big deal'),
     );
 
-    return $build;
+    $form['behat_cron_runner_thread_limit'] = array(
+        '#title' => 'How many threads',
+        '#type' => 'textfield',
+        '#default_value' => variable_get('behat_cron_runner_thread_limit', 2),
+        '#description' => t('Start with 2 then work your way up to see if it goes faster without bogging down the server.'),
+    );
+
+    return system_settings_form($form);
 }
-
-
-/**
- * Output for the Admin area
- *
- * @param $files_array
- * @return string
- */
-function _behat_runner_table($files_array) {
-    $rows = array();
-    foreach($files_array as $key => $value) {
-        $file_name = $value['filename'];
-        $module_name = $value['module'];
-        $tags = implode(', ', $value['tags_array']);
-        $rows[] = array(
-            'data' =>
-            array
-            (
-                _show_file_link($file_name, $module_name),
-                _show_module_name($file_name, $module_name),
-                $tags,
-                _show_link($file_name, $module_name, $link_text = 'view'),
-                _show_link($file_name, $module_name, $link_text = 'edit'),
-                _show_link($file_name, $module_name, $link_text = 'delete'),
-            )
-        );
-    };
-
-    $header = array(
-        'Name',
-        'Module',
-        'Tags',
-        'View',
-        'Edit',
-        'Delete',
-    );
-
-    $behat_table = theme('table', array(
-        'header' => $header,
-        'rows' => $rows,
-        'attributes' => array('class' => array('table-hover'), 'id' => 'admin-features')
-    ));
-
-    return $behat_table;
-}
-
