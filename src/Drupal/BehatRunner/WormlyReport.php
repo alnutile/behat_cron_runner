@@ -45,11 +45,11 @@ class WormlyReport {
     public function write_html_file($html, $report_name = 'wormly.html') {
         $destination = $this->path . '/' . $report_name;
         if($this->filesystem->exists($destination)) {
-            $this->filesystem->chmod($destination, 0766);
+            //$this->filesystem->chmod($destination, 0766);
         }
         $write = @file_put_contents($destination, $html);
         if ($write) {
-            $this->filesystem->chmod($destination, 0766);
+            //$this->filesystem->chmod($destination, 0766);
         } else {
             throw new BehatException("Error writing file.");
         }
