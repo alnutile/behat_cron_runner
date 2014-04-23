@@ -132,6 +132,7 @@ function drush_behat_cron_runner_behat_run_one($filepath, $filename) {
     $profile = variable_get('behat_cron_runner_profile', 'default');
     
     try {
+        exec("export MINK_EXTENSION_PARAMS=\"context[selenium2][capabilities][name]=SomeName\"");
         $runner->run($filepath, $profile);
         $result     = array('status' => 0, 'filename' => $filename);
         $html       = $wormlyReport->createOneWormlyPage($result);
