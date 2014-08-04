@@ -1,0 +1,6 @@
+0.1.1
+=====
+
+Set behat to 2.5.3 since otherwise it was pulling down the latest.
+Ouptut queue name in drush commands to help the user
+
