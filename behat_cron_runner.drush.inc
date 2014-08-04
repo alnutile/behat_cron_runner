@@ -139,7 +139,7 @@ function drush_behat_cron_runner_behat_run_one($filepath, $filename) {
         $wormlyReport->write_html_file($html, $filename . '.html');
     }
     catch(\BehatWrapper\BehatException $e) {
-            try {
+        try {
                 $runner->run($filepath, $profile);
                 $result     = array('status' => 0, 'filename' => $filename);
                 $html       = $wormlyReport->createOneWormlyPage($result);
@@ -169,7 +169,7 @@ function drush_behat_cron_runner_behat_cron_qup() {
         $queue->createItem($record);
     }
     $queue_size = $queue->numberOfItems();
-    drush_print("behat_cron_runner has $queue_size items to process");
+    drush_print("behat_cron_runner has $queue_size items to process for queue bcr");
 }
 
 function _get_files() {
